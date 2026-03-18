@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0d0f14"/>
+  <rect x="40" y="40" width="432" height="432" rx="64" fill="#1a1d2e"/>
+  <!-- Ballot box -->
+  <rect x="116" y="192" width="280" height="210" rx="20" fill="#4f7cff" opacity="0.12" stroke="#4f7cff" stroke-width="10"/>
+  <rect x="160" y="148" width="192" height="60" rx="16" fill="#4f7cff"/>
+  <!-- Checkmark -->
+  <polyline points="148,272 178,302 234,248" fill="none" stroke="#4f7cff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Lines -->
+  <rect x="260" y="264" width="96" height="14" rx="7" fill="#4f7cff" opacity="0.5"/>
+  <rect x="148" y="320" width="96" height="12" rx="6" fill="#9ba3bf" opacity="0.4"/>
+  <rect x="260" y="320" width="64" height="12" rx="6" fill="#9ba3bf" opacity="0.4"/>
+  <rect x="148" y="356" width="72" height="12" rx="6" fill="#9ba3bf" opacity="0.3"/>
+  <rect x="260" y="356" width="96" height="12" rx="6" fill="#9ba3bf" opacity="0.25"/>
+</svg>
