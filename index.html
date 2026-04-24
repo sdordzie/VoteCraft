@@ -1435,6 +1435,41 @@ tr.drag-over td { background: var(--accent-glow) !important; }
   .settings-grid { grid-template-columns: 1fr; }
   .settings-grid > .sg-full, .settings-grid > .sg-half, .settings-grid > .sg-third, .settings-grid > .sg-two3 { grid-column: span 1; }
 
+  /* ── Voting System Mode card — mobile fixes ── */
+  /* Card header: stack title row and badge on narrow screens */
+  .voting-mode-card-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  #votingModeBadge {
+    margin-left: 0 !important;
+    align-self: flex-start;
+  }
+  /* Mode cards: stack vertically on mobile */
+  .voting-mode-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+  /* Mode card internal header: prevent checkmark from being squeezed */
+  #modeCard-manual > div:first-child,
+  #modeCard-digital > div:first-child {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  #modeCard-manual > div:first-child > div:nth-child(2),
+  #modeCard-digital > div:first-child > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+  }
+  #modeCheck-manual, #modeCheck-digital {
+    flex-shrink: 0;
+  }
+  /* Mode card feature list: slightly larger text for readability */
+  #modeCard-manual ul,
+  #modeCard-digital ul {
+    font-size: 13px !important;
+  }
+
   /* Filter bar — stack */
   .filter-bar { flex-direction: column; gap: 8px; }
   .filter-bar > * { width: 100%; }
@@ -3841,7 +3876,7 @@ tr.drag-over td { background: var(--accent-glow) !important; }
 
           <!-- ══ ROW 1: VOTING MODE — full width, most important setting ══ -->
           <div class="card sg-full" style="border:2px solid var(--accent);">
-            <div class="card-header" style="background:var(--accent-glow);border-bottom:1px solid var(--accent)33;">
+            <div class="card-header voting-mode-card-header" style="background:var(--accent-glow);border-bottom:1px solid var(--accent)33;">
               <span style="font-size:20px;">🗳️</span>
               <div>
                 <h3 style="margin:0;">Voting System Mode</h3>
@@ -3850,7 +3885,7 @@ tr.drag-over td { background: var(--accent-glow) !important; }
               <span id="votingModeBadge" style="margin-left:auto;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;"></span>
             </div>
             <div class="card-body">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;">
+              <div class="voting-mode-cards-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;">
 
                 <!-- Manual Mode -->
                 <div id="modeCard-manual" onclick="setVotingMode('manual')"
