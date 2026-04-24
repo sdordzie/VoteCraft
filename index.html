@@ -12692,5 +12692,219 @@ function setVal(id, val) { const el = document.getElementById(id); if (el) el.va
   });
 
 })();</script>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     VOTECRAFT — PINCH-TO-ZOOM  (touch-only, full-app transform)
+     © 2026 Samuel Kwame Dordzie
+     ══════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Zoom HUD indicator ── */
+#vcZoomHud {
+  position: fixed;
+  bottom: 88px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15,18,28,0.88);
+  border: 1px solid rgba(79,124,255,0.35);
+  color: #e8eaf0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 18px;
+  border-radius: 30px;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  z-index: 99999;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+}
+#vcZoomHud.visible { opacity: 1; }
+#vcZoomHud .vc-zoom-icon { margin-right: 6px; font-style: normal; }
+
+/* ── Reset zoom button (shown when zoomed) ── */
+#vcZoomReset {
+  position: fixed;
+  bottom: 88px;
+  right: 16px;
+  background: var(--accent, #4f7cff);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99998;
+  box-shadow: 0 4px 16px rgba(79,124,255,0.4);
+  transition: opacity 0.2s, transform 0.15s;
+}
+#vcZoomReset.visible { display: flex; }
+#vcZoomReset:active { transform: scale(0.9); }
+
+/* ── App container: allow CSS transform origin ── */
+#app {
+  transform-origin: top left;
+  will-change: transform;
+}
+</style>
+
+<div id="vcZoomHud"><i class="vc-zoom-icon">🔍</i><span id="vcZoomLabel">100%</span></div>
+<button id="vcZoomReset" title="Reset zoom" onclick="vcResetZoom()">⟳</button>
+
+<script>
+/* ── VoteCraft Pinch-to-Zoom Engine ─────────────────────────────────
+   Strategy: track two-finger touch events on document, apply CSS
+   transform: scale() to the #app element.  Scroll, tap, inputs and
+   all existing interactions are unaffected — we only intercept when
+   a genuine two-finger pinch is detected.
+   ──────────────────────────────────────────────────────────────────*/
+(function vcPinchZoom() {
+
+  const APP        = document.getElementById('app');
+  const HUD        = document.getElementById('vcZoomHud');
+  const LABEL      = document.getElementById('vcZoomLabel');
+  const RESET_BTN  = document.getElementById('vcZoomReset');
+
+  const MIN_SCALE  = 0.5;
+  const MAX_SCALE  = 3.0;
+  const SNAP_RANGE = 0.07;   // snaps to 1.0 if within this delta
+
+  let currentScale = 1.0;
+  let startScale   = 1.0;
+  let startDist    = 0;
+  let isPinching   = false;
+  let hudTimer     = null;
+
+  /* ── Utility: distance between two touches ── */
+  function dist(t) {
+    const dx = t[0].clientX - t[1].clientX;
+    const dy = t[0].clientY - t[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  /* ── Apply scale with transform-origin top-left ── */
+  function applyScale(s, animate) {
+    currentScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
+    APP.style.transition = animate ? 'transform 0.22s cubic-bezier(0.25,0.46,0.45,0.94)' : 'none';
+    APP.style.transform  = currentScale === 1
+      ? 'none'
+      : `scale(${currentScale})`;
+    /* When zoomed, the shrunken app leaves dead space; expand
+       the body so the scroll container is correct. */
+    document.body.style.minHeight = currentScale < 1
+      ? (window.innerHeight / currentScale) + 'px'
+      : '';
+    showHud();
+    updateResetBtn();
+  }
+
+  /* ── Show the zoom HUD for 1.6 s ── */
+  function showHud() {
+    const pct = Math.round(currentScale * 100);
+    LABEL.textContent = pct + '%';
+    HUD.classList.add('visible');
+    clearTimeout(hudTimer);
+    hudTimer = setTimeout(() => HUD.classList.remove('visible'), 1600);
+  }
+
+  /* ── Show / hide the reset button ── */
+  function updateResetBtn() {
+    if (Math.abs(currentScale - 1) > 0.04) {
+      RESET_BTN.classList.add('visible');
+    } else {
+      RESET_BTN.classList.remove('visible');
+    }
+  }
+
+  /* ── Public: reset to 100% ── */
+  window.vcResetZoom = function() {
+    applyScale(1, true);
+  };
+
+  /* ════ TOUCH EVENT HANDLERS ════ */
+
+  document.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) {
+      isPinching  = true;
+      startDist   = dist(e.touches);
+      startScale  = currentScale;
+      /* Prevent the browser's native pinch-zoom from also firing */
+      e.preventDefault();
+    } else {
+      isPinching = false;
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!isPinching || e.touches.length !== 2) return;
+    e.preventDefault();
+
+    const newDist  = dist(e.touches);
+    const ratio    = newDist / startDist;
+    let   proposed = startScale * ratio;
+
+    /* Snap to 1.0 for a natural "back to normal" feel */
+    if (Math.abs(proposed - 1.0) < SNAP_RANGE) proposed = 1.0;
+
+    applyScale(proposed, false);
+  }, { passive: false });
+
+  document.addEventListener('touchend', function(e) {
+    if (isPinching && e.touches.length < 2) {
+      isPinching = false;
+      /* Smooth-clamp if somehow out of bounds */
+      applyScale(currentScale, true);
+    }
+  }, { passive: true });
+
+  /* ════ DOUBLE-TAP TO RESET ════
+     Two taps within 300 ms on the content area resets zoom. */
+  let lastTap = 0;
+  document.addEventListener('touchend', function(e) {
+    if (e.touches.length > 0) return;            // finger still down
+    if (Math.abs(currentScale - 1) < 0.04) return; // already at 1×
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      /* Ignore double-taps on interactive elements */
+      const tag = e.target.tagName;
+      if (['INPUT','SELECT','TEXTAREA','BUTTON','A'].includes(tag)) return;
+      vcResetZoom();
+    }
+    lastTap = now;
+  }, { passive: true });
+
+  /* ════ KEYBOARD SHORTCUT (desktop / external keyboard) ════
+     Ctrl/Cmd + = to zoom in, Ctrl/Cmd + - to zoom out,
+     Ctrl/Cmd + 0 to reset. */
+  document.addEventListener('keydown', function(e) {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    if (e.key === '=' || e.key === '+') {
+      e.preventDefault();
+      applyScale(currentScale + 0.1, true);
+    } else if (e.key === '-') {
+      e.preventDefault();
+      applyScale(currentScale - 0.1, true);
+    } else if (e.key === '0') {
+      e.preventDefault();
+      vcResetZoom();
+    }
+  });
+
+  /* ════ PREVENT NATIVE BROWSER PINCH-ZOOM ════
+     The viewport meta already has initial-scale=1 but some browsers
+     still allow native pinch — we block it so only our engine runs. */
+  document.addEventListener('gesturestart',  e => e.preventDefault(), { passive: false });
+  document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
+  document.addEventListener('gestureend',    e => e.preventDefault(), { passive: false });
+
+})();
+</script>
 </body>
 </html>
