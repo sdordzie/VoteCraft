@@ -240,6 +240,123 @@ html, body {
 ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
 
 /* ── LOCK SCREEN ── */
+/* ═══════════════════════════════════
+   SPLASH SCREEN
+═══════════════════════════════════ */
+#vcSplash {
+  position: fixed; inset: 0; z-index: 99999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+#vcSplash.hiding {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+.splash-bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(79,124,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,124,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+.splash-glow {
+  position: absolute; border-radius: 50%;
+  pointer-events: none; filter: blur(80px);
+}
+.splash-glow--a {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(79,124,255,0.18) 0%, transparent 70%);
+  top: -120px; right: -100px;
+  animation: splashGlowA 4s ease-in-out infinite alternate;
+}
+.splash-glow--b {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(120,80,255,0.12) 0%, transparent 70%);
+  bottom: -100px; left: -80px;
+  animation: splashGlowB 5s ease-in-out infinite alternate;
+}
+@keyframes splashGlowA {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(30px,40px) scale(1.15); }
+}
+@keyframes splashGlowB {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(-20px,-30px) scale(1.1); }
+}
+.splash-inner {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 16px; text-align: center; position: relative; z-index: 1;
+  padding: 0 32px;
+  animation: splashReveal 0.7s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes splashReveal {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.splash-logo-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.splash-ballot-icon {
+  font-size: 64px; line-height: 1;
+  animation: splashIconPop 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  filter: drop-shadow(0 0 24px rgba(79,124,255,0.5));
+}
+@keyframes splashIconPop {
+  from { opacity: 0; transform: scale(0.4) rotate(-12deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+.splash-logo {
+  font-family: var(--font-display); font-size: 52px;
+  letter-spacing: -2px; line-height: 1; color: var(--text);
+  animation: splashLogoIn 0.5s 0.35s ease both;
+}
+@keyframes splashLogoIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.splash-logo span { color: var(--accent); }
+.splash-tagline {
+  color: var(--text3); font-size: 14px; letter-spacing: 0.5px;
+  text-transform: uppercase; font-weight: 500;
+  animation: splashLogoIn 0.5s 0.45s ease both;
+}
+.splash-loader {
+  margin-top: 24px; width: 200px;
+  display: flex; flex-direction: column; gap: 10px; align-items: center;
+  animation: splashLogoIn 0.5s 0.6s ease both;
+}
+.splash-loader-bar {
+  width: 100%; height: 3px;
+  background: var(--border);
+  border-radius: 99px; overflow: hidden;
+}
+.splash-loader-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), #7c5cff);
+  border-radius: 99px;
+  animation: splashProgress 1.6s 0.4s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes splashProgress {
+  0%   { width: 0%; }
+  40%  { width: 55%; }
+  70%  { width: 78%; }
+  100% { width: 100%; }
+}
+.splash-loader-text {
+  font-size: 12px; color: var(--text3); letter-spacing: 0.3px;
+}
+.splash-credit {
+  position: absolute; bottom: 28px;
+  font-size: 11px; color: var(--text3); letter-spacing: 0.3px;
+}
+
+/* ═══════════════════════════════════
+   LOCK SCREEN (PIN entry)
+═══════════════════════════════════ */
 #lockScreen {
   position: fixed; inset: 0; z-index: 9999;
   background: var(--bg);
@@ -339,78 +456,179 @@ html, body {
   .lock-right .lock-card { max-width: 100%; }
 }
 
-/* ── ONBOARDING ── */
+/* ═══════════════════════════════════
+   ONBOARDING
+═══════════════════════════════════ */
 #onboarding {
   position: fixed; inset: 0; z-index: 9998;
   background: var(--bg);
   display: flex; flex-direction: column;
   overflow: hidden;
 }
-.onboard-topbar {
-  height: 64px; background: var(--bg2); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 32px; flex-shrink: 0; gap: 12px;
-}
-.onboard-topbar .logo { font-family: var(--font-display); font-size: 26px; letter-spacing: -1px; }
-.onboard-topbar .logo span { color: var(--accent); }
-.onboard-topbar .topbar-sub { color: var(--text2); font-size: 14px; }
-.onboard-topbar .topbar-right { display: flex; gap: 10px; align-items: center; }
 
+/* Top bar */
+.onboard-topbar {
+  height: 60px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; flex-shrink: 0; gap: 12px;
+}
+.onboard-topbar .logo { font-family: var(--font-display); font-size: 24px; letter-spacing: -1px; }
+.onboard-topbar .logo span { color: var(--accent); }
+.onboard-topbar .topbar-sub { color: var(--text3); font-size: 13px; }
+.onboard-topbar .topbar-right { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.topbar-hint { color: var(--text3); font-size: 13px; }
+
+/* Progress bar (mobile-first) */
+.ob-progress-bar {
+  display: none;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ob-progress-step {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  opacity: 0.4; transition: opacity 0.3s;
+}
+.ob-progress-step.ob-step--active  { opacity: 1; }
+.ob-progress-step.ob-step--done    { opacity: 0.75; }
+.ob-step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg3); border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--text2);
+  transition: all 0.3s;
+}
+.ob-progress-step.ob-step--active .ob-step-dot {
+  background: var(--accent); border-color: var(--accent); color: white;
+  box-shadow: 0 0 12px rgba(79,124,255,0.4);
+}
+.ob-progress-step.ob-step--done .ob-step-dot {
+  background: var(--green, #22c55e); border-color: var(--green, #22c55e); color: white;
+}
+.ob-step-name {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.4px; color: var(--text3);
+}
+.ob-progress-step.ob-step--active .ob-step-name { color: var(--accent); }
+.ob-progress-connector {
+  flex: 1; height: 2px; background: var(--border);
+  margin: 0 6px; margin-bottom: 18px;
+  border-radius: 2px;
+}
+
+/* Scrollable body */
 .onboard-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 24px 80px;
+  flex: 1; min-height: 0; overflow-y: auto;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: 36px 24px 80px;
 }
 .onboard-container {
-  max-width: 900px; width: 100%;
-  display: flex; flex-direction: column; gap: 32px;
+  max-width: 860px; width: 100%;
+  display: flex; flex-direction: column; gap: 40px;
 }
 .onboard-header { display: none; }
-.onboard-step-label {
-  display: flex; align-items: center; gap: 12px;
-  color: var(--text2); font-size: 13px;
+
+/* Section headers */
+.ob-section { display: flex; flex-direction: column; gap: 16px; }
+.ob-section-head {
+  display: flex; align-items: center; gap: 14px;
 }
-.onboard-step-label::before, .onboard-step-label::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
+.ob-section-num {
+  font-family: var(--font-display); font-size: 36px; font-weight: 800;
+  color: var(--accent); opacity: 0.25; line-height: 1; flex-shrink: 0;
+  letter-spacing: -1px;
 }
+.ob-section-title {
+  font-size: 18px; font-weight: 700; color: var(--text);
+  flex: 1;
+}
+.ob-section-title::after {
+  content: ''; display: block; margin-top: 5px;
+  height: 2px; width: 36px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 2px;
+}
+
+/* Type cards */
 .type-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
 }
 .type-card {
   background: var(--bg2);
   border: 2px solid var(--border);
   border-radius: var(--radius);
-  padding: 32px 24px;
+  padding: 26px 18px;
   cursor: pointer;
   transition: all 0.2s;
   text-align: center;
-  display: flex; flex-direction: column; gap: 12px; align-items: center;
+  display: flex; flex-direction: column; gap: 10px; align-items: center;
 }
-.type-card:hover { border-color: var(--accent); background: var(--bg3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,124,255,0.12); }
-.type-card.selected { border-color: var(--accent); background: var(--accent-glow); }
-.type-card .type-icon { font-size: 40px; }
-.type-card h3 { font-size: 16px; font-weight: 600; }
-.type-card p { color: var(--text2); font-size: 13px; line-height: 1.6; }
+.type-card:hover { border-color: var(--accent); background: var(--bg3); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(79,124,255,0.14); }
+.type-card.selected {
+  border-color: var(--accent); background: var(--accent-glow);
+  box-shadow: 0 0 0 3px rgba(79,124,255,0.18);
+}
+.type-card .type-icon { font-size: 36px; }
+.type-card h3 { font-size: 14px; font-weight: 700; }
+.type-card p { color: var(--text2); font-size: 12px; line-height: 1.55; }
 
-.template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+/* Template cards */
+.template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .template-card {
   background: var(--bg2);
   border: 2px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px;
+  padding: 24px;
   cursor: pointer;
   transition: all 0.2s;
-  display: flex; gap: 18px; align-items: flex-start;
+  display: flex; gap: 16px; align-items: flex-start;
 }
 .template-card:hover { border-color: var(--accent); background: var(--bg3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,124,255,0.12); }
-.template-card.selected { border-color: var(--accent); background: var(--accent-glow); }
-.template-card .t-icon { font-size: 32px; flex-shrink: 0; }
-.template-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-.template-card p { color: var(--text2); font-size: 13px; line-height: 1.6; }
+.template-card.selected {
+  border-color: var(--accent); background: var(--accent-glow);
+  box-shadow: 0 0 0 3px rgba(79,124,255,0.18);
+}
+.template-card .t-icon { font-size: 30px; flex-shrink: 0; }
+.template-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+.template-card p { color: var(--text2); font-size: 12px; line-height: 1.55; }
+
+/* Quick-setup form card */
+.ob-form-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.ob-fg-full { grid-column: 1 / -1; }
+
+/* CTA section */
+.ob-cta {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding-bottom: 20px;
+}
+.ob-start-btn {
+  display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(135deg, var(--accent) 0%, #6c4fff 100%);
+  border: none; border-radius: 14px;
+  color: white; font-size: 17px; font-weight: 700;
+  padding: 18px 44px; cursor: pointer;
+  box-shadow: 0 8px 28px rgba(79,124,255,0.38);
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: -0.2px;
+}
+.ob-start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(79,124,255,0.48);
+}
+.ob-start-btn:active { transform: scale(0.97); }
+.ob-start-icon { font-size: 22px; }
+.ob-cta-note {
+  font-size: 12px; color: var(--text3); letter-spacing: 0.2px;
+}
 
 /* ── APP SHELL ── */
 #app { display: flex; height: 100vh; overflow: hidden; }
@@ -1568,11 +1786,30 @@ tr.drag-over td { background: var(--accent-glow) !important; }
   .modal-footer { padding: 12px 14px; }
   .modal-header { padding: 14px; }
 
-  /* Onboarding */
-  .onboard-topbar { height: 52px; padding: 0 16px; }
+  /* Onboarding topbar */
+  .onboard-topbar { height: 52px; padding: 0 16px; gap: 10px; }
+  .onboard-topbar .logo { font-size: 20px; }
   .onboard-topbar .topbar-sub { display: none; }
   .onboard-topbar .topbar-right span { display: none; }
-  .onboard-scroll { padding: 16px 12px 60px; }
+  .topbar-hint { display: none; }
+  /* Show step progress bar on mobile */
+  .ob-progress-bar { display: flex; }
+  /* Tighten scroll area */
+  .onboard-scroll { padding: 20px 14px 80px; }
+  .onboard-container { gap: 28px; }
+  /* Section header — smaller number */
+  .ob-section-num { font-size: 26px; }
+  .ob-section-title { font-size: 16px; }
+  /* Type grid — 3 col still fine on tablet, stack on phone */
+  /* Template grid — stack */
+  .template-grid { grid-template-columns: 1fr; }
+  /* Form card */
+  .ob-form-card { padding: 16px; }
+  /* CTA button full width */
+  .ob-start-btn { width: 100%; justify-content: center; font-size: 16px; padding: 16px 24px; }
+  /* Splash */
+  .splash-logo { font-size: 40px; }
+  .splash-ballot-icon { font-size: 52px; }
 
   /* Wizard steps — scrollable row */
   .wizard-steps {
@@ -1626,9 +1863,25 @@ tr.drag-over td { background: var(--accent-glow) !important; }
   .modal { border-radius: 16px 16px 0 0 !important; }
 
   /* Onboarding step items */
-  .onboard-topbar { height: 48px; padding: 0 12px; }
-  .onboard-topbar .logo { font-size: 18px; }
-  .onboard-scroll { padding: 12px 10px 60px; }
+  /* Onboarding — small phone */
+  .onboard-scroll { padding: 16px 12px 80px; }
+  .onboard-container { gap: 24px; }
+  /* Type grid: stack to 1 column on small phones */
+  .type-grid { grid-template-columns: 1fr; }
+  .type-card { flex-direction: row; text-align: left; padding: 16px 18px; gap: 14px; }
+  .type-card .type-icon { font-size: 28px; flex-shrink: 0; }
+  .type-card h3 { font-size: 14px; margin-bottom: 2px; }
+  .type-card p { font-size: 12px; }
+  /* Template cards slim */
+  .template-card { padding: 16px; gap: 12px; }
+  .template-card .t-icon { font-size: 24px; }
+  /* Section header */
+  .ob-section-num { font-size: 22px; opacity: 0.2; }
+  .ob-section-title { font-size: 15px; }
+  /* Splash */
+  .splash-glow--a, .splash-glow--b { display: none; }
+  .splash-logo { font-size: 36px; }
+  .splash-ballot-icon { font-size: 48px; }
 
   /* Card settings panel grids */
   .card-body .form-grid { grid-template-columns: 1fr !important; }
@@ -1824,6 +2077,27 @@ tr.drag-over td { background: var(--accent-glow) !important; }
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     SPLASH SCREEN
+══════════════════════════════════════════ -->
+<div id="vcSplash">
+  <div class="splash-bg-grid"></div>
+  <div class="splash-glow splash-glow--a"></div>
+  <div class="splash-glow splash-glow--b"></div>
+  <div class="splash-inner">
+    <div class="splash-logo-wrap">
+      <div class="splash-ballot-icon">🗳️</div>
+      <div class="splash-logo">Vote<span>Craft</span></div>
+    </div>
+    <div class="splash-tagline">Professional Ballot Generator</div>
+    <div class="splash-loader">
+      <div class="splash-loader-bar"><div class="splash-loader-fill"></div></div>
+      <div class="splash-loader-text">Loading…</div>
+    </div>
+    <div class="splash-credit">© 2026 Samuel Kwame Dordzie</div>
+  </div>
+</div>
+
 <div id="lockScreen">
   <!-- Left branding panel -->
   <div class="lock-left">
@@ -1889,16 +2163,35 @@ tr.drag-over td { background: var(--accent-glow) !important; }
      ONBOARDING — ELECTION TYPE SELECTION
 ══════════════════════════════════════════ -->
 <div id="onboarding" style="display:none;">
+
   <!-- Fixed top bar -->
   <div class="onboard-topbar">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span style="font-size:22px;">🗳️</span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;line-height:1;">🗳️</span>
       <div class="logo">Vote<span>Craft</span></div>
-      <span class="topbar-sub">— Set up your election in seconds</span>
+      <span class="topbar-sub">— Set up your election</span>
     </div>
     <div class="topbar-right">
-      <span style="color:var(--text3);font-size:13px;">Already have a project?</span>
-      <button class="btn btn-secondary btn-sm" onclick="loadProject()">📂 Open Project</button>
+      <span class="topbar-hint">Already have a project?</span>
+      <button class="btn btn-secondary btn-sm" onclick="loadProject()">📂 Open</button>
+    </div>
+  </div>
+
+  <!-- Step progress bar (mobile) -->
+  <div class="ob-progress-bar">
+    <div class="ob-progress-step ob-step--active" id="obps1">
+      <div class="ob-step-dot"><span>1</span></div>
+      <div class="ob-step-name">Type</div>
+    </div>
+    <div class="ob-progress-connector"></div>
+    <div class="ob-progress-step" id="obps2">
+      <div class="ob-step-dot"><span>2</span></div>
+      <div class="ob-step-name">Mode</div>
+    </div>
+    <div class="ob-progress-connector"></div>
+    <div class="ob-progress-step" id="obps3">
+      <div class="ob-step-dot"><span>3</span></div>
+      <div class="ob-step-name">Details</div>
     </div>
   </div>
 
@@ -1906,62 +2199,74 @@ tr.drag-over td { background: var(--accent-glow) !important; }
   <div class="onboard-scroll">
     <div class="onboard-container">
 
-      <div class="onboard-step-label">Step 1 — Choose Election Type</div>
-      <div class="type-grid">
-        <div class="type-card" data-type="school" onclick="selectType(this,'school')">
-          <div class="type-icon">🏫</div>
-          <h3>School Election</h3>
-          <p>Prefects, SRC, Club Executives, Class Leaders, House Leadership</p>
+      <!-- Step 1 -->
+      <div class="ob-section">
+        <div class="ob-section-head">
+          <div class="ob-section-num">01</div>
+          <div class="ob-section-title">Choose Election Type</div>
         </div>
-        <div class="type-card" data-type="community" onclick="selectType(this,'community')">
-          <div class="type-icon">🏘️</div>
-          <h3>Community Election</h3>
-          <p>Church, Association, Local Committee, Zonal Leadership</p>
-        </div>
-        <div class="type-card" data-type="general" onclick="selectType(this,'general')">
-          <div class="type-icon">🗳️</div>
-          <h3>General Election</h3>
-          <p>District, Constituency, Formal structured political elections</p>
-        </div>
-      </div>
-
-      <div class="onboard-step-label">Step 2 — Choose Starting Mode</div>
-      <div class="template-grid">
-        <div class="template-card" data-mode="template" onclick="selectMode(this,'template')">
-          <div class="t-icon">📋</div>
-          <div>
-            <h3>Standard Template</h3>
-            <p>Pre-filled with default categories, positions, and settings for your election type. Fastest way to start.</p>
+        <div class="type-grid">
+          <div class="type-card" data-type="school" onclick="selectType(this,'school')">
+            <div class="type-icon">🏫</div>
+            <h3>School</h3>
+            <p>Prefects, SRC, Club &amp; House Leadership</p>
           </div>
-        </div>
-        <div class="template-card" data-mode="blank" onclick="selectMode(this,'blank')">
-          <div class="t-icon">📄</div>
-          <div>
-            <h3>Blank Project</h3>
-            <p>Start from scratch. Full control. Ideal for custom elections with unique requirements.</p>
+          <div class="type-card" data-type="community" onclick="selectType(this,'community')">
+            <div class="type-icon">🏘️</div>
+            <h3>Community</h3>
+            <p>Church, Association &amp; Local Committee</p>
+          </div>
+          <div class="type-card" data-type="general" onclick="selectType(this,'general')">
+            <div class="type-icon">🗳️</div>
+            <h3>General</h3>
+            <p>District, Constituency &amp; Formal Elections</p>
           </div>
         </div>
       </div>
 
-      <div class="onboard-step-label">Step 3 — Quick Setup</div>
-      <div class="form-section">
-        <div class="form-section-header" style="cursor:default;">
-          <span class="fs-icon">⚙️</span>
-          <h3>Election Details</h3>
+      <!-- Step 2 -->
+      <div class="ob-section">
+        <div class="ob-section-head">
+          <div class="ob-section-num">02</div>
+          <div class="ob-section-title">Choose Starting Mode</div>
         </div>
-        <div class="form-section-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Organization / Institution Name <span class="required">*</span></label>
-              <input type="text" id="qs-org" placeholder="e.g. Accra Academy, St. Francis Church…">
+        <div class="template-grid">
+          <div class="template-card" data-mode="template" onclick="selectMode(this,'template')">
+            <div class="t-icon">📋</div>
+            <div>
+              <h3>Standard Template</h3>
+              <p>Pre-filled categories, positions, and settings for your election type. Fastest way to start.</p>
             </div>
-            <div class="form-group">
+          </div>
+          <div class="template-card" data-mode="blank" onclick="selectMode(this,'blank')">
+            <div class="t-icon">📄</div>
+            <div>
+              <h3>Blank Project</h3>
+              <p>Start from scratch with full control. Ideal for custom elections with unique requirements.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="ob-section">
+        <div class="ob-section-head">
+          <div class="ob-section-num">03</div>
+          <div class="ob-section-title">Quick Setup</div>
+        </div>
+        <div class="ob-form-card">
+          <div class="form-grid">
+            <div class="form-group ob-fg-full">
+              <label>Organization / Institution Name <span class="required">*</span></label>
+              <input type="text" id="qs-org" placeholder="e.g. Accra Academy, St. Francis Church…" autocomplete="organization">
+            </div>
+            <div class="form-group ob-fg-full">
               <label>Election Title <span class="required">*</span></label>
-              <input type="text" id="qs-title" placeholder="e.g. 2025 Prefectship Elections">
+              <input type="text" id="qs-title" placeholder="e.g. 2025 Prefectship Elections" autocomplete="off">
             </div>
             <div class="form-group">
               <label>Election Year</label>
-              <input type="text" id="qs-year" placeholder="e.g. 2025">
+              <input type="text" id="qs-year" placeholder="e.g. 2025" inputmode="numeric">
             </div>
             <div class="form-group">
               <label>Election Date</label>
@@ -1971,11 +2276,13 @@ tr.drag-over td { background: var(--accent-glow) !important; }
         </div>
       </div>
 
-      <div style="text-align:center; padding-bottom: 40px;">
-        <button class="btn btn-primary btn-lg" onclick="startProject()">
-          🚀 &nbsp;Create Project &amp; Start
+      <!-- CTA -->
+      <div class="ob-cta">
+        <button class="ob-start-btn" onclick="startProject()">
+          <span class="ob-start-icon">🚀</span>
+          <span>Create Project &amp; Start</span>
         </button>
-        <div style="margin-top:12px;font-size:12px;color:var(--text3);">All data is stored locally on your device. No internet required.</div>
+        <div class="ob-cta-note">🔒 All data stored locally · No internet required</div>
       </div>
 
     </div>
@@ -6405,11 +6712,21 @@ function selectType(el, type) {
   document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   STATE.electionType = type;
+  // Progress dots
+  var s1 = document.getElementById('obps1');
+  if (s1) { s1.classList.remove('ob-step--active'); s1.classList.add('ob-step--done'); }
+  var s2 = document.getElementById('obps2');
+  if (s2) { s2.classList.add('ob-step--active'); }
 }
 function selectMode(el, mode) {
   document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   STATE.templateMode = mode;
+  // Progress dots
+  var s2 = document.getElementById('obps2');
+  if (s2) { s2.classList.remove('ob-step--active'); s2.classList.add('ob-step--done'); }
+  var s3 = document.getElementById('obps3');
+  if (s3) { s3.classList.add('ob-step--active'); }
 }
 function startProject() {
   const org = document.getElementById('qs-org').value.trim();
@@ -12727,8 +13044,20 @@ function setVal(id, val) { const el = document.getElementById(id); if (el) el.va
   }
   // Restore theme preference
   initTheme();
-  // Show lock screen first
-  document.getElementById('lockScreen').style.display = 'flex';
+  // Splash → lock screen sequence
+  const _splash = document.getElementById('vcSplash');
+  document.getElementById('lockScreen').style.display = 'none';
+  if (_splash) {
+    setTimeout(function() {
+      _splash.classList.add('hiding');
+      setTimeout(function() {
+        _splash.style.display = 'none';
+        document.getElementById('lockScreen').style.display = 'flex';
+      }, 520);
+    }, 2000);
+  } else {
+    document.getElementById('lockScreen').style.display = 'flex';
+  }
 
   // ── PWA: Register service worker ──────────────
   if ('serviceWorker' in navigator) {
