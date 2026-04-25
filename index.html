@@ -492,23 +492,97 @@ html, body {
   overflow: hidden; min-width: 0;
 }
 
+/* ══ TOP HEADER ══ */
 #header {
-  height: var(--header-h);
   background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 28px; gap: 16px;
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
   overflow: visible;
   position: relative;
   z-index: 200;
 }
+
+/* Row 1 — hamburger + title + desktop actions */
+#headerRow1 {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+}
+
+/* Row 2 — mobile action strip (hidden by default) */
+#headerRow2 {
+  display: none;
+}
+
 .header-title {
   font-size: 17px; font-weight: 600;
   display: flex; align-items: center; gap: 8px;
+  min-width: 0;
+  overflow: hidden;
 }
-.header-title .page-icon { font-size: 18px; }
+.header-title .page-icon { font-size: 18px; flex-shrink: 0; }
+#hdrTitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .header-breadcrumb { color: var(--text3); font-size: 13px; margin-left: 4px; }
-.header-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; overflow: visible; position: relative; }
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  overflow: visible;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── Mobile action pill buttons ── */
+.mob-action-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: var(--bg3, rgba(255,255,255,0.06));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 18px;
+  padding: 6px 10px;
+  min-width: 56px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  flex: 1;
+}
+.mob-action-pill:active {
+  transform: scale(0.93);
+  background: var(--border);
+}
+.mob-action-pill--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.mob-action-pill--primary:active {
+  background: var(--accent-hover, #3b65e8);
+  border-color: var(--accent-hover, #3b65e8);
+}
+.mob-pill-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.mob-action-pill--primary .mob-pill-label {
+  color: rgba(255,255,255,0.85);
+}
 
 #content {
   flex: 1; overflow-y: auto;
@@ -1350,7 +1424,7 @@ tr.drag-over td { background: var(--accent-glow) !important; }
 
 /* ── 800px: Icon-only sidebar + hamburger ── */
 @media (max-width: 800px) {
-  :root { --sidebar-w: 0px; --header-h: 52px; }
+  :root { --sidebar-w: 0px; --header-h: 48px; }
 
   /* Sidebar hidden off-screen by default, slides in when .open */
   #sidebar {
@@ -1386,12 +1460,20 @@ tr.drag-over td { background: var(--accent-glow) !important; }
   /* Show sidebar close button */
   #sidebarCloseBtn { display: flex !important; }
 
-  /* Header */
-  #header { padding: 0 12px; gap: 8px; }
+  /* Header — two-row mobile layout */
+  #headerRow1 { padding: 0 12px; gap: 10px; }
   .header-title { font-size: 15px; }
-  .header-actions { gap: 6px; }
-  .header-actions .btn { padding: 7px 10px; font-size: 12px; }
-  .header-actions .btn span { display: none; }
+  /* Hide the desktop action buttons from row 1 on mobile */
+  #headerActions { display: none !important; }
+  /* Show the mobile action strip as row 2 */
+  #headerRow2 {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 6px 12px 8px;
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+  }
 
   /* Content */
   #content { padding: 16px 12px; }
@@ -1524,9 +1606,13 @@ tr.drag-over td { background: var(--accent-glow) !important; }
 
 /* ── 600px: Smaller phones ── */
 @media (max-width: 600px) {
-  :root { --header-h: 48px; }
+  :root { --header-h: 44px; }
 
-  #header { padding: 0 10px; }
+  #headerRow1 { padding: 0 10px; gap: 8px; }
+  .header-title { font-size: 14px; }
+  #headerRow2 { padding: 5px 10px 7px; gap: 6px; }
+  .mob-action-pill { min-width: 48px; padding: 5px 8px; font-size: 17px; }
+  .mob-pill-label { font-size: 9px; }
   #content { padding: 12px 10px; }
 
   .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
@@ -2092,27 +2178,45 @@ tr.drag-over td { background: var(--accent-glow) !important; }
   <!-- MAIN -->
   <div id="main">
     <div id="header">
-      <button id="hamburgerBtn" onclick="toggleSidebar()" style="display:none;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text);padding:8px;border-radius:var(--radius-sm);flex-shrink:0;" aria-label="Toggle menu">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-          <rect y="3" width="20" height="2.5" rx="1.25"/>
-          <rect y="9" width="20" height="2.5" rx="1.25"/>
-          <rect y="15" width="20" height="2.5" rx="1.25"/>
-        </svg>
-      </button>
-      <div class="header-title">
-        <span class="page-icon" id="hdrIcon">🏠</span>
-        <span id="hdrTitle">Dashboard</span>
+      <!-- ── Row 1: hamburger · page title · inline actions (desktop) ── -->
+      <div id="headerRow1">
+        <button id="hamburgerBtn" onclick="toggleSidebar()" style="display:none;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text);padding:8px;border-radius:var(--radius-sm);flex-shrink:0;" aria-label="Toggle menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <rect y="3" width="20" height="2.5" rx="1.25"/>
+            <rect y="9" width="20" height="2.5" rx="1.25"/>
+            <rect y="15" width="20" height="2.5" rx="1.25"/>
+          </svg>
+        </button>
+        <div class="header-title">
+          <span class="page-icon" id="hdrIcon">🏠</span>
+          <span id="hdrTitle">Dashboard</span>
+        </div>
+        <div class="header-actions" id="headerActions">
+          <button id="themeToggleBtn" onclick="toggleDarkMode()" class="btn btn-ghost btn-sm" title="Toggle light/dark mode" style="font-size:16px;padding:6px 10px;">🌙</button>
+          <button class="btn btn-secondary btn-sm hdr-save-btn" onclick="saveProject()" data-tip="Save project to file">
+            <span class="hdr-icon">💾</span><span class="hdr-label"> Save</span>
+          </button>
+          <button class="btn btn-secondary btn-sm hdr-open-btn" onclick="loadProject()" data-tip="Open saved project">
+            <span class="hdr-icon">📂</span><span class="hdr-label"> Open</span>
+          </button>
+          <button class="btn btn-primary btn-sm hdr-preview-btn" onclick="navigate('preview')">
+            <span class="hdr-icon">👁️</span><span class="hdr-label"> Preview Ballot</span>
+          </button>
+        </div>
       </div>
-      <div class="header-actions" id="headerActions">
-        <button id="themeToggleBtn" onclick="toggleDarkMode()" class="btn btn-ghost btn-sm" title="Toggle light/dark mode" style="font-size:16px;padding:6px 10px;">🌙</button>
-        <button class="btn btn-secondary btn-sm" onclick="saveProject()" data-tip="Save project to file">
-          💾 Save
+      <!-- ── Row 2: mobile action strip (hidden on desktop) ── -->
+      <div id="headerRow2">
+        <button class="mob-action-pill" onclick="saveProject()" aria-label="Save project">
+          <span>💾</span><span class="mob-pill-label">Save</span>
         </button>
-        <button class="btn btn-secondary btn-sm" onclick="loadProject()" data-tip="Open saved project">
-          📂 Open
+        <button class="mob-action-pill" onclick="loadProject()" aria-label="Open project">
+          <span>📂</span><span class="mob-pill-label">Open</span>
         </button>
-        <button class="btn btn-primary btn-sm" onclick="navigate('preview')">
-          👁️ Preview Ballot
+        <button class="mob-action-pill mob-action-pill--primary" onclick="navigate('preview')" aria-label="Preview ballot">
+          <span>👁️</span><span class="mob-pill-label">Preview</span>
+        </button>
+        <button class="mob-action-pill" onclick="toggleDarkMode()" id="mobThemeBtn" aria-label="Toggle theme">
+          <span id="mobThemeIcon">🌙</span><span class="mob-pill-label">Theme</span>
         </button>
       </div>
     </div>
@@ -5308,6 +5412,8 @@ function setTheme(theme) {
   localStorage.setItem('vc_theme', theme);
   const btn = document.getElementById('themeToggleBtn');
   if (btn) btn.textContent = theme === 'light' ? '🌙' : '☀️';
+  const mobIcon = document.getElementById('mobThemeIcon');
+  if (mobIcon) mobIcon.textContent = theme === 'light' ? '🌙' : '☀️';
   const darkBtn  = document.getElementById('themeDarkBtn');
   const lightBtn = document.getElementById('themeLightBtn');
   if (darkBtn)  darkBtn.className  = 'btn btn-sm ' + (theme === 'dark'  ? 'btn-primary' : 'btn-secondary');
